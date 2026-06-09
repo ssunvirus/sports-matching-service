@@ -77,7 +77,7 @@ export default function Navbar() {
             >
               {/* 메인 버튼 */}
               <button className="flex items-center gap-2 text-sm font-bold text-green-500 hover:text-green-400 cursor-pointer">
-                🏟️ 매치 서비스
+                🏟️ 매치 서비스(준비중)
                 {/* <svg
                   className={`w-2.5 h-2.5 min-w-0 min-h-0 flex-shrink-0 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""}`}
                   stroke="currentColor"
