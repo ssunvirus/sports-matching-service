@@ -104,7 +104,7 @@ export default function MatchListPage() {
         </div>
 
         {/* 🗂️ 실시간 매치업 보드 피드 리스트 구역 */}
-        <div className="space-y-2">
+        <div className="space-y-2 flex flex-col gap-4">
           {filteredMatches.length === 0 ? (
             <div className="text-center p-12 border-2 border-dashed border-gray-800 rounded-2xl bg-gray-900/20">
               <p className="text-gray-500 text-sm">
@@ -115,7 +115,7 @@ export default function MatchListPage() {
             filteredMatches.map((match) => (
               <div
                 key={match.id}
-                className={`p-6 rounded-2xl border transition-all bg-gray-900/50 border-gray-800 hover:border-gray-700 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6 ${
+                className={`px-4 xl:px-6 py-4 rounded-2xl border transition-all bg-gray-900/50 border-gray-800 hover:border-gray-700 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 xl:gap-6 ${
                   match.status === "매칭완료" ? "opacity-60" : ""
                 }`}
               >
@@ -124,13 +124,13 @@ export default function MatchListPage() {
                   <div className="flex items-center gap-2 flex-wrap">
                     {/* 종목 태그 */}
                     <span
-                      className={`px-2.5 py-1 rounded-md text-[10px] font-extrabold ${
+                      className={`px-2 py-1 rounded-md text-[20px] font-extrabold ${
                         match.sportType === "축구"
                           ? "bg-green-500/10 text-green-400 border border-green-500/20"
                           : "bg-orange-500/10 text-orange-400 border border-orange-500/20"
                       }`}
                     >
-                      {match.sportType === "축구" ? "⚽ 축구" : "🏀 농구"}
+                      {match.sportType === "축구" ? "⚽" : "🏀"}
                     </span>
                     {/* 학교 대표팀 이름 */}
                     <span className="text-sm font-bold text-gray-200">
@@ -185,7 +185,7 @@ export default function MatchListPage() {
                       onClick={() =>
                         handleApplyMatch(match.schoolName, match.sportType)
                       }
-                      className="w-full md:w-auto px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold transition-all cursor-pointer hover:shadow-lg hover:shadow-blue-600/20"
+                      className="w-max px-2 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-s font-bold transition-all cursor-pointer hover:shadow-lg hover:shadow-blue-600/20"
                     >
                       🤝 매칭 매치 도전하기
                     </button>
