@@ -16,26 +16,6 @@ const MATCH_SAMPLES = [
     status: "대기중",
     createdAt: "방금 전",
   },
-  {
-    id: "match-2",
-    schoolName: "양정고등학교",
-    sportType: "축구",
-    stadiumName: "신트리공원 인조잔디구장",
-    timeSlot: "주말 일요일 08:00 ~ 10:00",
-    title: "선출 없고 순수 동아리 멤버들입니다. 가볍게 한판 붙으실 분!",
-    status: "대기중",
-    createdAt: "20분 전",
-  },
-  {
-    id: "match-3",
-    schoolName: "한가람고등학교",
-    sportType: "농구",
-    stadiumName: "양천디지털체육센터 체육관",
-    timeSlot: "주말 토요일 14:00 ~ 16:00",
-    title: "5vs5 풀코트 경기 원합니다. 체육관 대관비는 반빵입니다 🏀",
-    status: "매칭완료", // 기획용 매칭 완료 예시
-    createdAt: "2시간 전",
-  },
 ];
 
 export default function MatchListPage() {
