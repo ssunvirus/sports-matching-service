@@ -11,6 +11,7 @@ interface Player {
   number: string;
   position: string;
 }
+/*변경사항*/
 
 interface FormationPitchProps {
   sportsType: "soccer" | "basketball";
@@ -20,9 +21,12 @@ interface FormationPitchProps {
 }
 
 // 축구 포지션 정의
-const SOCCER_FORMATIONS: Record<string, { label: string; top: string; left: string }[]> = {
+const SOCCER_FORMATIONS: Record<
+  string,
+  { label: string; top: string; left: string }[]
+> = {
   "4-3-3": [
-    { label: "GK", top: "85%", left: "50%" },
+    { label: "골기퍼", top: "85%", left: "50%" },
     { label: "LB", top: "68%", left: "15%" },
     { label: "LCB", top: "72%", left: "38%" },
     { label: "RCB", top: "72%", left: "62%" },
@@ -71,15 +75,22 @@ const BASKETBALL_POSITIONS = [
   { label: "C", top: "25%", left: "67%", name: "센터" },
 ];
 
-export default function FormationPitch({ sportsType, players, schoolName, email }: FormationPitchProps) {
+export default function FormationPitch({
+  sportsType,
+  players,
+  schoolName,
+  email,
+}: FormationPitchProps) {
   const isSoccer = sportsType === "soccer";
-  const [selectedFormation, setSelectedFormation] = useState<string>(isSoccer ? "4-3-3" : "starting5");
+  const [selectedFormation, setSelectedFormation] = useState<string>(
+    isSoccer ? "4-3-3" : "starting5",
+  );
   const [lineup, setLineup] = useState<Record<string, string>>({}); // { positionLabel: playerId }
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveSuccess, setSaveSuccess] = useState<boolean>(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null); // 현재 선택 중인 포지션 라벨
-  
+
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Firestore 고유 문서 ID 생성
@@ -88,7 +99,10 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setActiveDropdown(null);
       }
     }
@@ -199,7 +213,9 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
           <h4 className="text-md font-bold text-gray-200 flex items-center gap-2">
             📋 {isSoccer ? "⚽ 축구 포메이션 전술판" : "🏀 농구 스타팅 라인업"}
           </h4>
-          <p className="text-xs text-gray-500 mt-1">포지션 노드를 눌러 선수를 배치하고 전술을 구축하세요.</p>
+          <p className="text-xs text-gray-500 mt-1">
+            포지션 노드를 눌러 선수를 배치하고 전술을 구축하세요.
+          </p>
         </div>
 
         <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
@@ -241,7 +257,6 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
 
       {/* 시각적 경기장 보드 */}
       <div className="relative w-full max-w-[420px] aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-gray-800 select-none bg-slate-900">
-        
         {/* 경기장 라인 마킹 */}
         {isSoccer ? (
           /* 축구장 라인 데코 */
@@ -300,7 +315,11 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
                 {/* 포지션 원형 배지 */}
                 <button
                   type="button"
-                  onClick={() => setActiveDropdown(activeDropdown === pos.label ? null : pos.label)}
+                  onClick={() =>
+                    setActiveDropdown(
+                      activeDropdown === pos.label ? null : pos.label,
+                    )
+                  }
                   className={`w-11 h-11 rounded-full flex items-center justify-center font-bold text-xs border-2 transition-all cursor-pointer shadow-lg active:scale-95 ${
                     isAssigned
                       ? isSoccer
@@ -310,7 +329,9 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
                   }`}
                 >
                   {isAssigned ? (
-                    <span className="text-sm font-extrabold">{player.number}</span>
+                    <span className="text-sm font-extrabold">
+                      {player.number}
+                    </span>
                   ) : (
                     <span>{pos.label}</span>
                   )}
@@ -328,7 +349,26 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
                   <div
                     ref={dropdownRef}
                     className="absolute bottom-12 z-50 bg-slate-950 border border-gray-800 rounded-xl shadow-2xl p-2 w-48 text-left max-h-48 overflow-y-auto"
-                    style={{ left: pos.left === "85%" || pos.left === "80%" || pos.left === "88%" ? "auto" : "50%", right: pos.left === "85%" || pos.left === "80%" || pos.left === "88%" ? "0px" : "auto", transform: pos.left === "85%" || pos.left === "80%" || pos.left === "88%" ? "none" : "translateX(-50%)" }}
+                    style={{
+                      left:
+                        pos.left === "85%" ||
+                        pos.left === "80%" ||
+                        pos.left === "88%"
+                          ? "auto"
+                          : "50%",
+                      right:
+                        pos.left === "85%" ||
+                        pos.left === "80%" ||
+                        pos.left === "88%"
+                          ? "0px"
+                          : "auto",
+                      transform:
+                        pos.left === "85%" ||
+                        pos.left === "80%" ||
+                        pos.left === "88%"
+                          ? "none"
+                          : "translateX(-50%)",
+                    }}
                   >
                     <div className="px-2 py-1 text-[10px] font-bold text-gray-500 border-b border-gray-800 mb-1 flex items-center justify-between">
                       <span>{pos.label} 포지션 배정</span>
@@ -341,19 +381,23 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
                     </div>
 
                     {players.length === 0 ? (
-                      <p className="p-2 text-center text-xs text-gray-600">등록된 선수가 없습니다.</p>
+                      <p className="p-2 text-center text-xs text-gray-600">
+                        등록된 선수가 없습니다.
+                      </p>
                     ) : (
                       <div className="space-y-0.5">
                         {players.map((p) => {
-                          const isAlreadyAssignedElsewhere = Object.keys(lineup).some(
-                            (k) => k !== pos.label && lineup[k] === p.id
-                          );
+                          const isAlreadyAssignedElsewhere = Object.keys(
+                            lineup,
+                          ).some((k) => k !== pos.label && lineup[k] === p.id);
                           const isCurrent = lineup[pos.label] === p.id;
 
                           return (
                             <button
                               key={p.id}
-                              onClick={() => handleAssignPlayer(pos.label, p.id)}
+                              onClick={() =>
+                                handleAssignPlayer(pos.label, p.id)
+                              }
                               className={`w-full px-2 py-1.5 rounded text-xs text-left font-medium flex items-center justify-between transition-colors ${
                                 isCurrent
                                   ? "bg-green-500/20 text-green-400"
@@ -379,7 +423,6 @@ export default function FormationPitch({ sportsType, players, schoolName, email 
             );
           })}
         </div>
-
       </div>
     </div>
   );
