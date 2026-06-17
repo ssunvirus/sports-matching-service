@@ -42,6 +42,7 @@ export default function Home() {
               현재 대기 중인 축구 팀: 14개 교
             </p>
           </div>
+
           <div
             className={`p-6 rounded-xl border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"}`}
           >

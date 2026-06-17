@@ -35,11 +35,10 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`flex items-center justify-between px-6 py-4 border-b transition-colors duration-300 relative ${
-          isDarkMode
+        className={`flex items-center justify-between px-6 py-4 border-b transition-colors duration-300 relative ${isDarkMode
             ? "bg-gray-800 border-gray-700 text-gray-100"
             : "bg-white border-gray-200 text-gray-900 shadow-sm"
-        }`}
+          }`}
       >
         {/* 왼쪽 로고 및 메뉴 구역 */}
         <div className="flex items-center gap-8">
@@ -97,29 +96,26 @@ export default function Navbar() {
               {isDropdownOpen && (
                 <div className="absolute left-0 top-full w-44 pt-2 z-50">
                   <div
-                    className={`rounded-xl border shadow-2xl overflow-hidden ${
-                      isDarkMode
+                    className={`rounded-xl border shadow-2xl overflow-hidden ${isDarkMode
                         ? "bg-gray-800 border-gray-700"
                         : "bg-white border-gray-200"
-                    }`}
+                      }`}
                   >
                     <Link
                       href="/match-list"
-                      className={`block px-4 py-3 text-xs font-bold transition-colors ${
-                        isDarkMode
+                      className={`block px-4 py-3 text-xs font-bold transition-colors ${isDarkMode
                           ? "hover:bg-gray-700 text-gray-300"
                           : "hover:bg-gray-100 text-gray-700"
-                      }`}
+                        }`}
                     >
                       🔍 등록된 매치 확인
                     </Link>
                     <Link
                       href="/match-booking"
-                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${
-                        isDarkMode
+                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${isDarkMode
                           ? "hover:bg-gray-700 text-gray-300 border-gray-700"
                           : "hover:bg-gray-100 text-gray-700 border-gray-100"
-                      }`}
+                        }`}
                     >
                       ➕ 새 매치 등록하기
                     </Link>
@@ -134,11 +130,10 @@ export default function Navbar() {
         <div className="flex items-center gap-4">
           <button
             onClick={() => setIsDarkMode(!isDarkMode)}
-            className={`px-3 py-1.5 text-xs font-bold rounded-lg border ${
-              isDarkMode
+            className={`px-3 py-1.5 text-xs font-bold rounded-lg border ${isDarkMode
                 ? "bg-gray-700 border-gray-600 text-yellow-400"
                 : "bg-gray-100 border-gray-300 text-gray-600"
-            }`}
+              }`}
           >
             {isDarkMode ? "☀️ 라이트모드" : "🌙 다크모드"}
           </button>
