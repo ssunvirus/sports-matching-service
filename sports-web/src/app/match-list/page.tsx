@@ -3,36 +3,140 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { db } from "../lib/firebase";
+import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/firestore";
 
-// 🏆 기획 포인트: 타 학교 대표팀들이 등록해 놓은 실시간 매치업 서랍 데이터 (샘플)
-const MATCH_SAMPLES = [
-  {
-    id: "match-1",
-    schoolName: "신목고등학교",
-    sportType: "축구",
-    stadiumName: "목동종합운동장 주경기장",
-    timeSlot: "주말 토요일 10:00 ~ 12:00",
-    title: "빡겜 말고 매너 경기하실 30대 팀 모십니다! 음료 내기 해요 ⚽",
-    status: "대기중",
-    createdAt: "방금 전",
-  },
-];
+interface Match {
+  id: string;
+  schoolName: string;
+  sportType: string;
+  stadiumName: string;
+  timeSlot: string;
+  title: string;
+  status: string;
+  createdAt: any;
+  challengerSchoolName?: string;
+  challengerEmail?: string;
+}
+
+// 등록 시간을 보기 좋게 포맷팅하는 헬퍼 함수
+const formatTime = (createdAt: any) => {
+  if (!createdAt) return "방금 전";
+  if (createdAt.seconds) {
+    const date = new Date(createdAt.seconds * 1000);
+    const diffMs = Date.now() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    if (diffMins < 1) return "방금 전";
+    if (diffMins < 60) return `${diffMins}분 전`;
+    const diffHours = Math.floor(diffMins / 60);
+    if (diffHours < 24) return `${diffHours}시간 전`;
+    return date.toLocaleDateString("ko-KR", {
+      month: "short",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
+  const date = new Date(createdAt);
+  return isNaN(date.getTime()) ? "알 수 없음" : date.toLocaleString();
+};
 
 export default function MatchListPage() {
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [selectedSport, setSelectedSport] = useState("전체"); // 🎯 종목 필터링용 바구니
+  const [matches, setMatches] = useState<Match[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loggedInUser, setLoggedInUser] = useState<{ email: string; schoolName: string } | null>(null);
+
+  // 로그인 상태 확인
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setLoggedInUser(JSON.parse(savedUser));
+    }
+  }, []);
+
+  // Firestore에서 실시간 매치 데이터 로드
+  useEffect(() => {
+    const fetchMatches = async () => {
+      setIsLoading(true);
+      try {
+        const matchesRef = collection(db, "matches");
+        const q = query(matchesRef, orderBy("createdAt", "desc"));
+        const querySnapshot = await getDocs(q);
+        const loadedMatches: Match[] = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          schoolName: doc.data().schoolName || "",
+          sportType: doc.data().sportType || "",
+          stadiumName: doc.data().stadiumName || "",
+          timeSlot: doc.data().timeSlot || "",
+          title: doc.data().title || "",
+          status: doc.data().status || "대기중",
+          createdAt: doc.data().createdAt,
+          challengerSchoolName: doc.data().challengerSchoolName,
+          challengerEmail: doc.data().challengerEmail,
+        }));
+        setMatches(loadedMatches);
+      } catch (error) {
+        console.error("매치 목록 로드 실패 에러:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchMatches();
+  }, []);
 
   // 🎯 기획 반영: '전체', '축구', '농구' 버튼을 누르면 그 종목만 필터링해서 보여줍니다.
-  const filteredMatches = MATCH_SAMPLES.filter((match) => {
+  const filteredMatches = matches.filter((match) => {
     if (selectedSport === "전체") return true;
     return match.sportType === selectedSport;
   });
 
   // 도전 신청하기 버튼 클릭 함수
-  const handleApplyMatch = (schoolName: string, sportType: string) => {
-    alert(
-      `🔥 [${schoolName}]의 ${sportType} 도전장에 매칭 매니저가 도전 신청을 보냈습니다! 실시간 매칭 수락을 기다리세요.`,
-    );
+  const handleApplyMatch = async (matchId: string, matchSchoolName: string, matchSportType: string) => {
+    if (!loggedInUser) {
+      alert("도전 신청을 하려면 먼저 로그인이 필요합니다! 🔒");
+      return;
+    }
+    
+    if (loggedInUser.schoolName === matchSchoolName) {
+      alert("우리 학교 매치 상대방에게는 도전장을 보낼 수 없습니다! 😅");
+      return;
+    }
+
+    if (!confirm(`[${matchSchoolName}]의 ${matchSportType} 매치에 정말 도전하시겠습니까?`)) {
+      return;
+    }
+
+    try {
+      const matchRef = doc(db, "matches", matchId);
+      await updateDoc(matchRef, {
+        status: "매칭완료",
+        challengerSchoolName: loggedInUser.schoolName,
+        challengerEmail: loggedInUser.email,
+        matchedAt: new Date()
+      });
+
+      alert(`🎉 [${matchSchoolName}]과의 ${matchSportType} 매칭이 성공적으로 성사되었습니다!`);
+      
+      // 로컬 상태 갱신
+      setMatches((prev) =>
+        prev.map((m) =>
+          m.id === matchId
+            ? {
+                ...m,
+                status: "매칭완료",
+                challengerSchoolName: loggedInUser.schoolName,
+                challengerEmail: loggedInUser.email,
+              }
+            : m
+        )
+      );
+    } catch (error) {
+      console.error("매치 신청 에러:", error);
+      alert("매칭 도전 과정 중 오류가 발생했습니다. 파이어베이스 설정을 확인해 주세요.");
+    }
   };
 
   return (
@@ -85,7 +189,12 @@ export default function MatchListPage() {
 
         {/* 🗂️ 실시간 매치업 보드 피드 리스트 구역 */}
         <div className="space-y-2 flex flex-col gap-4">
-          {filteredMatches.length === 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12 text-gray-400">
+              <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+              <p className="text-sm">실시간 매치 불러오는 중...</p>
+            </div>
+          ) : filteredMatches.length === 0 ? (
             <div className="text-center p-12 border-2 border-dashed border-gray-800 rounded-2xl bg-gray-900/20">
               <p className="text-gray-500 text-sm">
                 현재 대기 중인 {selectedSport} 매칭이 없습니다.
@@ -113,13 +222,21 @@ export default function MatchListPage() {
                       {match.sportType === "축구" ? "⚽" : "🏀"}
                     </span>
                     {/* 학교 대표팀 이름 */}
-                    <span className="text-sm font-bold text-gray-200">
-                      {match.schoolName} 대표팀
+                    <span className="text-sm font-bold text-gray-200 flex items-center gap-1.5 flex-wrap">
+                      {match.status === "매칭완료" ? (
+                        <>
+                          <span className="text-green-400 font-extrabold">{match.schoolName}</span>
+                          <span className="text-gray-500 font-medium text-xs">VS</span>
+                          <span className="text-blue-400 font-extrabold">{match.challengerSchoolName || "상대팀"}</span>
+                        </>
+                      ) : (
+                        `${match.schoolName} 대표팀`
+                      )}
                     </span>
                     <span className="text-xs text-gray-600">•</span>
                     {/* 등록 시간 */}
                     <span className="text-xs text-gray-500">
-                      {match.createdAt} 등록
+                      {formatTime(match.createdAt)} 등록
                     </span>
                   </div>
 
@@ -163,7 +280,7 @@ export default function MatchListPage() {
                   {match.status === "대기중" ? (
                     <button
                       onClick={() =>
-                        handleApplyMatch(match.schoolName, match.sportType)
+                        handleApplyMatch(match.id, match.schoolName, match.sportType)
                       }
                       className="w-max px-2 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-s font-bold transition-all cursor-pointer hover:shadow-lg hover:shadow-blue-600/20"
                     >
