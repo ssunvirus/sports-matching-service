@@ -153,7 +153,7 @@ export default function TeamManagementPage() {
     };
 
     fetchPlayers();
-    
+
     // 탭 전환 시 입력 폼 포지션 리셋 처리
     setPlayerPosition("");
   }, [activeTab]);
@@ -188,9 +188,8 @@ export default function TeamManagementPage() {
   return (
     <div
       suppressHydrationWarning
-      className={`min-h-screen font-sans transition-colors duration-300 ${
-        isDarkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
-      }`}
+      className={`min-h-screen font-sans transition-colors duration-300 ${isDarkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-900"
+        }`}
     >
       <main className="max-w-6xl mx-auto mt-10 p-6">
         {/* 상단 헤더 */}
@@ -207,21 +206,19 @@ export default function TeamManagementPage() {
         <div className="flex gap-4 border-b border-gray-700 pb-px mb-8">
           <button
             onClick={() => setActiveTab("soccer")}
-            className={`pb-3 text-lg font-bold transition-all px-2 cursor-pointer ${
-              activeTab === "soccer"
+            className={`pb-3 text-lg font-bold transition-all px-2 cursor-pointer ${activeTab === "soccer"
                 ? "text-green-400 border-b-2 border-green-400"
                 : "text-gray-500 hover:text-gray-300"
-            }`}
+              }`}
           >
             ⚽ 축구 대표팀
           </button>
           <button
             onClick={() => setActiveTab("basketball")}
-            className={`pb-3 text-lg font-bold transition-all px-2 cursor-pointer ${
-              activeTab === "basketball"
+            className={`pb-3 text-lg font-bold transition-all px-2 cursor-pointer ${activeTab === "basketball"
                 ? "text-orange-400 border-b-2 border-orange-400"
                 : "text-gray-500 hover:text-gray-300"
-            }`}
+              }`}
           >
             🏀 농구 대표팀
           </button>
@@ -231,14 +228,12 @@ export default function TeamManagementPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
           {/* [1] 선수 등록 폼 */}
           <div
-            className={`p-6 rounded-xl border ${
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"
-            }`}
+            className={`p-6 rounded-xl border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"
+              }`}
           >
             <h3
-              className={`text-lg font-bold mb-4 ${
-                activeTab === "soccer" ? "text-green-400" : "text-orange-400"
-              }`}
+              className={`text-lg font-bold mb-4 ${activeTab === "soccer" ? "text-green-400" : "text-orange-400"
+                }`}
             >
               🏃‍♂️ 새 선수 등록
             </h3>
@@ -292,11 +287,10 @@ export default function TeamManagementPage() {
               </div>
               <button
                 type="submit"
-                className={`w-full mt-2 py-2 text-white font-bold rounded-lg transition-colors text-sm cursor-pointer ${
-                  activeTab === "soccer"
+                className={`w-full mt-2 py-2 text-white font-bold rounded-lg transition-colors text-sm cursor-pointer ${activeTab === "soccer"
                     ? "bg-green-500 hover:bg-green-600"
                     : "bg-orange-500 hover:bg-orange-600"
-                }`}
+                  }`}
               >
                 명부에 등록하기
               </button>
@@ -305,9 +299,8 @@ export default function TeamManagementPage() {
 
           {/* [2] 공식 로스터 리스트 */}
           <div
-            className={`md:col-span-2 p-6 rounded-xl border ${
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"
-            }`}
+            className={`md:col-span-2 p-6 rounded-xl border ${isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"
+              }`}
           >
             <h3 className="text-lg font-bold mb-4 text-gray-200">
               📋 {activeTab === "soccer" ? "축구팀" : "농구팀"} 공식 로스터 ({currentPlayers.length}명)
@@ -337,9 +330,8 @@ export default function TeamManagementPage() {
                         className="border-b border-gray-800 text-gray-200 hover:bg-gray-700/30"
                       >
                         <td
-                          className={`py-3 font-mono font-bold ${
-                            activeTab === "soccer" ? "text-green-400" : "text-orange-400"
-                          }`}
+                          className={`py-3 font-mono font-bold ${activeTab === "soccer" ? "text-green-400" : "text-orange-400"
+                            }`}
                         >
                           No. {player.number}
                         </td>

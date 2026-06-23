@@ -2,18 +2,20 @@
 import { NextResponse } from "next/server";
 import { db } from "../../lib/firebase";
 import { collection, query, where, getDocs } from "firebase/firestore";
+import crypto from "crypto";
+
 export const dynamic = "force-dynamic";
 
 export async function POST(request: Request) {
   try {
-    // 1. 프론트엔드 로그인 창에서 보낸 이메일 데이터를 받습니다.
+    // 1. 프론트엔드 로그인 창에서 보낸 데이터를 받습니다.
     const body = await request.json();
-    const { email } = body;
+    const { email, password } = body;
 
-    // 예외 처리: 이메일이 입력되지 않은 경우
-    if (!email || !email.trim()) {
+    // 예외 처리: 필수 입력 항목 검증
+    if (!email || !email.trim() || !password || !password.trim()) {
       return NextResponse.json(
-        { error: "이메일 주소를 입력해주세요." },
+        { error: "이메일과 비밀번호를 모두 입력해주세요." },
         { status: 400 }
       );
     }
@@ -35,7 +37,16 @@ export async function POST(request: Request) {
     const userDoc = querySnapshot.docs[0];
     const userData = userDoc.data();
 
-    // 5. 검문 완료! 프론트엔드에게 성공 신호와 유저 정보를 반환합니다.
+    // 5. 비밀번호 검증 (SHA-256 해시 비교)
+    const hashedInputPassword = crypto.createHash("sha256").update(password).digest("hex");
+    if (userData.password !== hashedInputPassword) {
+      return NextResponse.json(
+        { error: "비밀번호가 일치하지 않습니다." },
+        { status: 401 }
+      );
+    }
+
+    // 6. 검문 완료! 프론트엔드에게 성공 신호와 유저 정보를 반환합니다.
     return NextResponse.json(
       { 
         message: "로그인 성공!", 
