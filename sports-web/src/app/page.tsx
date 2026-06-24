@@ -4,9 +4,10 @@
 import { useState, useEffect } from "react";
 import AuthModal from "../components/AuthModal";
 import Link from "next/link"; // 🎯 [추가] 페이지 간의 이동을 도와주는 마법 부품 가져오기
+import { useTheme } from "../context/ThemeContext";
 
 export default function Home() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 🎯 [기획 포인트] 로그인한 유저 정보를 담아둘 바구니

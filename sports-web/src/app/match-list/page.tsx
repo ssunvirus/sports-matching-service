@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { db } from "../lib/firebase";
 import { collection, getDocs, query, orderBy, doc, updateDoc } from "firebase/firestore";
+import { useTheme } from "../../context/ThemeContext";
 
 interface Match {
   id: string;
@@ -42,7 +43,7 @@ const formatTime = (createdAt: any) => {
 };
 
 export default function MatchListPage() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useTheme();
   const [selectedSport, setSelectedSport] = useState("전체"); // 🎯 종목 필터링용 바구니
   const [matches, setMatches] = useState<Match[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -140,13 +141,13 @@ export default function MatchListPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 font-sans p-6">
+    <div className={`min-h-screen font-sans p-6 transition-colors duration-300 ${isDarkMode ? "bg-gray-950 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
       <main className="max-w-5xl mx-auto mt-6">
         {/* 상단 기획 타이틀 섹션 */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-800 pb-6 mb-8 gap-4">
+        <div className={`flex flex-col md:flex-row md:items-center justify-between border-b pb-6 mb-8 gap-4 ${isDarkMode ? "border-gray-800" : "border-gray-200"}`}>
           <div>
-            <h1 className="text-3xl font-extrabold text-gray-100 mb-2">
-              🔍 실시간 등록된 매치 확인
+            <h1 className={`text-3xl font-extrabold mb-2 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>
+              🔍 실시간 매치 신청
             </h1>
             <p className="text-gray-400 text-sm">
               현재 다른 학교 대표팀이 오픈한 매치 명부입니다. 시간과 장소를
@@ -169,10 +170,12 @@ export default function MatchListPage() {
             <button
               key={sport}
               onClick={() => setSelectedSport(sport)}
-              className={`px-4 py-2 rounded-xl text-base font-bold text-grey-100     border transition-all cursor-pointer ${
+              className={`px-4 py-2 rounded-xl text-base font-bold border transition-all cursor-pointer ${
                 selectedSport === sport
                   ? "bg-green-500 border-green-500 text-white shadow-lg shadow-green-500/20"
-                  : "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200"
+                  : isDarkMode
+                    ? "bg-gray-800 border-gray-700 text-gray-400 hover:text-gray-200"
+                    : "bg-white border-gray-200 text-gray-500 hover:text-gray-700"
               }`}
             >
               {sport === "전체"
@@ -195,8 +198,8 @@ export default function MatchListPage() {
               <p className="text-sm">실시간 매치 불러오는 중...</p>
             </div>
           ) : filteredMatches.length === 0 ? (
-            <div className="text-center p-12 border-2 border-dashed border-gray-800 rounded-2xl bg-gray-900/20">
-              <p className="text-gray-500 text-sm">
+            <div className={`text-center p-12 border-2 border-dashed rounded-2xl ${isDarkMode ? "border-gray-800 bg-gray-900/20 text-gray-500" : "border-gray-300 bg-white text-gray-400 shadow-sm"}`}>
+              <p className="text-sm">
                 현재 대기 중인 {selectedSport} 매칭이 없습니다.
               </p>
             </div>
@@ -204,9 +207,11 @@ export default function MatchListPage() {
             filteredMatches.map((match) => (
               <div
                 key={match.id}
-                className={`px-4 xl:px-6 py-4 rounded-2xl border transition-all bg-gray-900/50 border-gray-800 hover:border-gray-700 shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 xl:gap-6 ${
-                  match.status === "매칭완료" ? "opacity-60" : ""
-                }`}
+                className={`px-4 xl:px-6 py-4 rounded-2xl border transition-all shadow-sm flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 xl:gap-6 ${
+                  isDarkMode
+                    ? "bg-gray-900/50 border-gray-800 hover:border-gray-700"
+                    : "bg-white border-gray-200 hover:border-gray-300 shadow-sm"
+                } ${match.status === "매칭완료" ? "opacity-60" : ""}`}
               >
                 {/* 왼쪽 구역: 매치 상세 정보 정보창 */}
                 <div className="space-y-3 flex-1">
@@ -222,7 +227,7 @@ export default function MatchListPage() {
                       {match.sportType === "축구" ? "⚽" : "🏀"}
                     </span>
                     {/* 학교 대표팀 이름 */}
-                    <span className="text-sm font-bold text-gray-200 flex items-center gap-1.5 flex-wrap">
+                    <span className={`text-sm font-bold flex items-center gap-1.5 flex-wrap ${isDarkMode ? "text-gray-200" : "text-gray-800"}`}>
                       {match.status === "매칭완료" ? (
                         <>
                           <span className="text-green-400 font-extrabold">{match.schoolName}</span>
@@ -239,9 +244,9 @@ export default function MatchListPage() {
                       {formatTime(match.createdAt)} 등록
                     </span>
                   </div>
-
+ 
                   {/* 도전장 핵심 타이틀 한줄평 */}
-                  <h3 className="text-lg font-bold text-gray-100 tracking-tight leading-snug">
+                  <h3 className={`text-lg font-bold tracking-tight leading-snug my-2 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>
                     {match.title}
                   </h3>
 
@@ -261,7 +266,7 @@ export default function MatchListPage() {
                 </div>
 
                 {/* 오른쪽 구역: 상태 뱃지 및 액션 버튼 */}
-                <div className="w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 border-gray-800 flex items-center justify-between md:justify-end gap-4 shrink-0">
+                <div className={`w-full md:w-auto pt-4 md:pt-0 border-t md:border-t-0 flex items-center justify-between md:justify-end gap-4 shrink-0 ${isDarkMode ? "border-gray-800" : "border-gray-200"}`}>
                   <div className="text-left md:text-right hidden sm:block">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

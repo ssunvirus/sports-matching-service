@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation"; // 🎯 [추가] 등록 완료 후 게시판으로 화면을 워프시킬 네비게이터
 import { db } from "../lib/firebase"; // 🎯 [추가] 우리 파이어베이스 진짜 창고 열쇠 가져오기
 import { collection, addDoc, serverTimestamp } from "firebase/firestore"; // 🎯 [추가] 파이어베이스 소통 장부들
+import { useTheme } from "../../context/ThemeContext";
 
 // 🏟️ 예약 가능한 구장들 샘플 데이터 명부
 const STADIUM_SAMPLES = [
@@ -48,6 +49,7 @@ const STADIUM_SAMPLES = [
 ];
 
 export default function MatchBookingPage() {
+    const { isDarkMode } = useTheme();
     const router = useRouter(); // 🎯 워프 로봇 초기화
     const [loggedInUser, setLoggedInUser] = useState<{ email: string; schoolName: string } | null>(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -111,7 +113,7 @@ export default function MatchBookingPage() {
 
     if (isLoading) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-950 text-gray-100">
+            <div className={`min-h-screen flex items-center justify-center transition-colors duration-300 ${isDarkMode ? "bg-gray-950 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
                 <p className="text-sm tracking-widest animate-pulse text-gray-400">구장 예약 정보 불러오는 중...</p>
             </div>
         );
@@ -119,7 +121,7 @@ export default function MatchBookingPage() {
 
     if (!loggedInUser) {
         return (
-            <div className="min-h-screen flex flex-col items-center justify-center bg-gray-950 text-gray-100">
+            <div className={`min-h-screen flex flex-col items-center justify-center transition-colors duration-300 ${isDarkMode ? "bg-gray-955 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
                 <p className="mb-4 text-lg font-semibold">🔒 매치 등록 및 구장 예약은 로그인이 필요합니다.</p>
                 <Link href="/" className="px-4 py-2 bg-green-500 rounded-lg text-sm font-bold hover:bg-green-600 transition-colors">
                     메인 화면으로 가기
@@ -129,12 +131,12 @@ export default function MatchBookingPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-950 text-gray-100 font-sans p-6">
+        <div className={`min-h-screen font-sans p-6 transition-colors duration-300 ${isDarkMode ? "bg-gray-950 text-gray-100" : "bg-gray-50 text-gray-900"}`}>
             <main className="max-w-6xl mx-auto mt-6">
 
                 {/* 상단 타이틀 */}
-                <div className="mb-8 border-b border-gray-800 pb-4">
-                    <h1 className="text-3xl font-extrabold text-gray-100 mb-2">🏟️ 경기 매치업 & 구장 예약 센터</h1>
+                <div className={`mb-8 border-b pb-4 ${isDarkMode ? "border-gray-800" : "border-gray-200"}`}>
+                    <h1 className={`text-3xl font-extrabold mb-2 ${isDarkMode ? "text-gray-100" : "text-gray-900"}`}>🏟️ 경기 매치업 & 구장 예약 센터</h1>
                     <p className="text-gray-400 text-sm">
                         원하는 구장과 시간을 선택하여 <span className="text-green-400 font-bold">{loggedInUser.schoolName}</span>의 매치업 도전장을 띄워보세요!
                     </p>
@@ -158,23 +160,25 @@ export default function MatchBookingPage() {
                                         onClick={() => setSelectedStadium(stadium)}
                                         className={`p-5 rounded-xl border transition-all cursor-pointer flex flex-col justify-between ${isSelected
                                             ? "bg-green-500/10 border-green-400 shadow-md shadow-green-500/10"
-                                            : "bg-gray-900 border-gray-800 hover:border-gray-700"
+                                            : isDarkMode
+                                                ? "bg-gray-900 border-gray-800 hover:border-gray-700"
+                                                : "bg-white border-gray-200 hover:border-gray-300 shadow-sm"
                                             }`}
                                     >
                                         <div>
                                             <div className="flex items-center justify-between mb-2">
                                                 <span className="text-2xl">{stadium.image}</span>
-                                                <span className="text-xs bg-gray-800 border border-gray-700 px-2 py-0.5 rounded text-gray-400">
+                                                <span className={`text-xs border px-2 py-0.5 rounded ${isDarkMode ? "bg-gray-800 border-gray-700 text-gray-400" : "bg-gray-100 border-gray-200 text-gray-500"}`}>
                                                     {stadium.type}
                                                 </span>
                                             </div>
-                                            <h3 className="text-lg font-bold text-gray-100 mb-1">{stadium.name}</h3>
+                                            <h3 className={`text-lg font-bold mb-1 ${isDarkMode ? "text-gray-100" : "text-gray-800"}`}>{stadium.name}</h3>
                                             <p className="text-xs text-gray-400 mb-4">📍 {stadium.location}</p>
                                         </div>
 
-                                        <div className="flex items-center justify-between pt-2 border-t border-gray-800/50">
+                                        <div className={`flex items-center justify-between pt-2 border-t ${isDarkMode ? "border-gray-800/50" : "border-gray-100"}`}>
                                             <span className="text-sm font-semibold text-green-400">{stadium.price}</span>
-                                            <span className={`text-xs font-bold px-2 py-1 rounded ${isSelected ? "bg-green-500 text-white" : "bg-gray-800 text-gray-400"
+                                            <span className={`text-xs font-bold px-2 py-1 rounded ${isSelected ? "bg-green-500 text-white" : isDarkMode ? "bg-gray-800 text-gray-400" : "bg-gray-100 text-gray-500"
                                                 }`}>
                                                 {isSelected ? "✓ 선택됨" : "구장 선택"}
                                             </span>
@@ -186,13 +190,13 @@ export default function MatchBookingPage() {
                     </div>
 
                     {/* 👉 오른쪽 구역: 선택한 구장에 시간대를 골라 매치 최종 등록하는 폼 */}
-                    <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 h-fit sticky top-2">
+                    <div className={`border rounded-xl p-6 h-fit sticky top-2 ${isDarkMode ? "bg-gray-900 border-gray-800" : "bg-white border-gray-200 shadow-md"}`}>
                         <h2 className="text-xl font-bold text-orange-400 mb-4">⚡ 매치업 등록 양식</h2>
 
                         <form onSubmit={handleCreateMatch} className="space-y-5">
                             <div>
                                 <label className="block text-xs text-gray-400 mb-1">선택된 구장</label>
-                                <div className="p-3 bg-gray-950 border border-gray-800 rounded-lg text-sm">
+                                <div className={`p-3 border rounded-lg text-sm ${isDarkMode ? "bg-gray-950 border-gray-850" : "bg-gray-50 border-gray-100 text-gray-850"}`}>
                                     {selectedStadium ? (
                                         <p className="font-bold text-green-400">🏟️ {selectedStadium.name} ({selectedStadium.sportType})</p>
                                     ) : (
@@ -206,7 +210,9 @@ export default function MatchBookingPage() {
                                 <select
                                     value={selectedTime}
                                     onChange={(e) => setSelectedTime(e.target.value)}
-                                    className="w-full px-3 py-2 text-sm bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-orange-400 text-white"
+                                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:border-orange-400 ${
+                                        isDarkMode ? "bg-gray-950 border-gray-800 text-white" : "bg-white border-gray-200 text-gray-800"
+                                    }`}
                                 >
                                     <option value="">-- 시간대를 골라주세요 --</option>
                                     <option value="주말 토요일 10:00 ~ 12:00">주말 토요일 10:00 ~ 12:00 (오전 매치)</option>
@@ -223,7 +229,9 @@ export default function MatchBookingPage() {
                                     value={matchTitle}
                                     onChange={(e) => setMatchTitle(e.target.value)}
                                     placeholder="예: 빡겜 말고 매너 경기하실 팀 모십니다!"
-                                    className="w-full px-3 py-2 text-sm bg-gray-950 border border-gray-800 rounded-lg focus:outline-none focus:border-orange-400 text-white"
+                                    className={`w-full px-3 py-2 text-sm border rounded-lg focus:outline-none focus:border-orange-400 ${
+                                        isDarkMode ? "bg-gray-955 border-gray-800 text-white" : "bg-white border-gray-200 text-gray-800"
+                                    }`}
                                 />
                             </div>
 
