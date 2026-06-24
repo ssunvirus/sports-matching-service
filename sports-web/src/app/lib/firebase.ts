@@ -1,6 +1,7 @@
 // src/app/lib/firebase.ts
 import { initializeApp, getApps, getApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
 
 // 🎯 선균님이 발급받으신 고유 파이어베이스 열쇠 정보를 탑재합니다.
 const firebaseConfig = {
@@ -18,3 +19,6 @@ const app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig);
 
 // 🎯 구글 클라우드 데이터베이스(Firestore) 진짜 출입 게이트를 내보냅니다.
 export const db = getFirestore(app);
+
+// 🎯 구글 클라우드 인증(Authentication) 진짜 출입 게이트를 내보냅니다.
+export const auth = getAuth(app);

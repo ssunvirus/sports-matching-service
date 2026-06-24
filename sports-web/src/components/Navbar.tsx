@@ -4,6 +4,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import AuthModal from "./AuthModal";
+import { auth } from "../app/lib/firebase";
+import { signOut } from "firebase/auth";
 
 export default function Navbar() {
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -23,8 +25,13 @@ export default function Navbar() {
     }
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     if (confirm("로그아웃 하시겠습니까? ⚽")) {
+      try {
+        await signOut(auth);
+      } catch (error) {
+        console.error("Firebase Auth 로그아웃 에러:", error);
+      }
       localStorage.removeItem("user");
       setLoggedInUser(null);
       alert("로그아웃 되었습니다.");
