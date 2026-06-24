@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { db } from "../../app/lib/firebase";
+import { useTheme } from "../../context/ThemeContext";
 import {
   collection,
   addDoc,
@@ -23,7 +24,7 @@ interface Player {
 }
 
 export default function TeamManagementPage() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useTheme();
   const [loggedInUser, setLoggedInUser] = useState<{
     email: string;
     schoolName: string;

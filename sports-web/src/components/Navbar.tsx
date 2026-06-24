@@ -6,9 +6,10 @@ import Link from "next/link";
 import AuthModal from "./AuthModal";
 import { auth } from "../app/lib/firebase";
 import { signOut } from "firebase/auth";
+import { useTheme } from "../context/ThemeContext";
 
 export default function Navbar() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode, toggleDarkMode } = useTheme();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loggedInUser, setLoggedInUser] = useState<{
     email: string;
@@ -17,6 +18,8 @@ export default function Navbar() {
 
   // 🎯 [핵심] 드롭다운 메뉴판이 열렸는지 닫혔는지 기억하는 자바스크립트 스위치
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isLeagueDropdownOpen, setIsLeagueDropdownOpen] = useState(false);
+  const [isTeamDropdownOpen, setIsTeamDropdownOpen] = useState(false);
 
   useEffect(() => {
     const savedUser = localStorage.getItem("user");
@@ -57,22 +60,58 @@ export default function Navbar() {
           </Link>
 
           <div className="flex items-center gap-6 border-l border-gray-700 pl-6">
-            {/* 🏃‍♂️ 1. 팀 관리 메뉴 */}
-            {!loggedInUser ? (
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="text-sm font-bold text-green-500 hover:text-green-400"
-              >
+            {/* 🏃‍♂️ 1. 팀 관리 메뉴 그룹 */}
+            <div
+              className="relative p-2"
+              onMouseEnter={() => setIsTeamDropdownOpen(true)}
+              onMouseLeave={() => setIsTeamDropdownOpen(false)}
+            >
+              <button className="flex items-center gap-2 text-sm font-bold text-green-500 hover:text-green-400 cursor-pointer">
                 🏃‍♂️ 팀 관리
               </button>
-            ) : (
-              <Link
-                href="/team-management"
-                className="text-sm font-bold text-green-500 hover:text-green-400"
-              >
-                🏃‍♂️ 팀 관리
-              </Link>
-            )}
+
+              {isTeamDropdownOpen && (
+                <div className="absolute left-0 top-full w-44 pt-2 z-50">
+                  <div
+                    className={`rounded-xl border shadow-2xl overflow-hidden ${isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                      }`}
+                  >
+                    {!loggedInUser ? (
+                      <button
+                        onClick={() => setIsModalOpen(true)}
+                        className={`w-full text-left px-4 py-3 text-xs font-bold transition-colors ${isDarkMode
+                            ? "hover:bg-gray-700 text-gray-300"
+                            : "hover:bg-gray-100 text-gray-700"
+                          }`}
+                      >
+                        🏃‍♂️ 나의 팀 관리
+                      </button>
+                    ) : (
+                      <Link
+                        href="/team-management"
+                        className={`block px-4 py-3 text-xs font-bold transition-colors ${isDarkMode
+                            ? "hover:bg-gray-700 text-gray-300"
+                            : "hover:bg-gray-100 text-gray-700"
+                          }`}
+                      >
+                        🏃‍♂️ 나의 팀 관리
+                      </Link>
+                    )}
+                    <Link
+                      href="/find-team"
+                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${isDarkMode
+                          ? "hover:bg-gray-700 text-gray-300 border-gray-700"
+                          : "hover:bg-gray-100 text-gray-700 border-gray-100"
+                        }`}
+                    >
+                      🔍 팀 찾기
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
 
             {/* 🏟️ 2. 매치 서비스 메뉴 그룹 (자바스크립트 마우스 감시망) */}
             {/* 💡 onMouseEnter(마우스 진입), onMouseLeave(마우스 이탈) 이벤트를 직접 걸어줍니다. */}
@@ -130,13 +169,81 @@ export default function Navbar() {
                 </div>
               )}
             </div>
+
+            {/* 🏆 3. 리그 메뉴 그룹 */}
+            <div
+              className="relative p-2"
+              onMouseEnter={() => setIsLeagueDropdownOpen(true)}
+              onMouseLeave={() => setIsLeagueDropdownOpen(false)}
+            >
+              <button className="flex items-center gap-2 text-sm font-bold text-green-500 hover:text-green-400 cursor-pointer">
+                🏆 리그
+              </button>
+
+              {isLeagueDropdownOpen && (
+                <div className="absolute left-0 top-full w-48 pt-2 z-50">
+                  <div
+                    className={`rounded-xl border shadow-2xl overflow-hidden ${isDarkMode
+                        ? "bg-gray-800 border-gray-700"
+                        : "bg-white border-gray-200"
+                      }`}
+                  >
+                    <Link
+                      href="/league/seoul-gangseo"
+                      className={`block px-4 py-3 text-xs font-bold transition-colors ${isDarkMode
+                          ? "hover:bg-gray-700 text-gray-300"
+                          : "hover:bg-gray-100 text-gray-700"
+                        }`}
+                    >
+                      ⚽ 서울 (강서)
+                    </Link>
+                    <Link
+                      href="/league/seoul-gangbuk"
+                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${isDarkMode
+                          ? "hover:bg-gray-700 text-gray-300 border-gray-700"
+                          : "hover:bg-gray-100 text-gray-700 border-gray-100"
+                        }`}
+                    >
+                      ⚽ 서울 (강북)
+                    </Link>
+                    <Link
+                      href="/league/seoul-gangnam"
+                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${isDarkMode
+                          ? "hover:bg-gray-700 text-gray-300 border-gray-700"
+                          : "hover:bg-gray-100 text-gray-700 border-gray-100"
+                        }`}
+                    >
+                      ⚽ 서울 (강남)
+                    </Link>
+                    <Link
+                      href="/league/gyeonggi"
+                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${isDarkMode
+                          ? "hover:bg-gray-700 text-gray-300 border-gray-700"
+                          : "hover:bg-gray-100 text-gray-700 border-gray-100"
+                        }`}
+                    >
+                      🍊 경기도
+                    </Link>
+                    <Link
+                      href="/league/incheon"
+                      className={`block px-4 py-3 text-xs font-bold transition-colors border-t ${isDarkMode
+                          ? "hover:bg-gray-700 text-gray-300 border-gray-700"
+                          : "hover:bg-gray-100 text-gray-700 border-gray-100"
+                        }`}
+                    >
+                      ⚓ 인천
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
         {/* 오른쪽 회원 정보 구역 */}
         <div className="flex items-center gap-4">
           <button
-            onClick={() => setIsDarkMode(!isDarkMode)}
+            onClick={toggleDarkMode}
             className={`px-3 py-1.5 text-xs font-bold rounded-lg border ${isDarkMode
                 ? "bg-gray-700 border-gray-600 text-yellow-400"
                 : "bg-gray-100 border-gray-300 text-gray-600"
