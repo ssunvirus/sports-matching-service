@@ -87,7 +87,9 @@ export default function TeamManagementPage() {
 
   // 선수 삭제 핸들러
   const handleDeletePlayer = async (playerId: string, name: string) => {
-    if (!confirm(`정말로 ${name} 선수를 대표팀 명부에서 제명하시겠습니까? 😰`)) {
+    if (
+      !confirm(`정말로 ${name} 선수를 대표팀 명부에서 제명하시겠습니까? 😰`)
+    ) {
       return;
     }
 
@@ -129,7 +131,7 @@ export default function TeamManagementPage() {
           collection(db, "players"),
           where("schoolName", "==", currentUser.schoolName),
           where("sportsType", "==", activeTab),
-          orderBy("createdAt", "asc")
+          orderBy("createdAt", "asc"),
         );
 
         const querySnapshot = await getDocs(q);
@@ -153,7 +155,7 @@ export default function TeamManagementPage() {
     };
 
     fetchPlayers();
-    
+
     // 탭 전환 시 입력 폼 포지션 리셋 처리
     setPlayerPosition("");
   }, [activeTab]);
@@ -163,7 +165,9 @@ export default function TeamManagementPage() {
       <div className="min-h-screen flex items-center justify-center bg-gray-900 text-gray-100">
         <div className="flex flex-col items-center gap-3">
           <div className="w-8 h-8 border-4 border-green-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-sm tracking-widest text-gray-400">팀원 정보 불러오는 중...</p>
+          <p className="text-sm tracking-widest text-gray-400">
+            팀원 정보 불러오는 중...
+          </p>
         </div>
       </div>
     );
@@ -172,7 +176,9 @@ export default function TeamManagementPage() {
   if (!loggedInUser) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-gray-100">
-        <p className="mb-4 text-lg font-semibold">🔒 로그인이 필요한 서비스입니다.</p>
+        <p className="mb-4 text-lg font-semibold">
+          🔒 로그인이 필요한 서비스입니다.
+        </p>
         <Link
           href="/"
           className="px-4 py-2 bg-green-500 rounded-lg text-sm font-bold hover:bg-green-600 transition-colors text-white"
@@ -183,7 +189,8 @@ export default function TeamManagementPage() {
     );
   }
 
-  const currentPlayers = activeTab === "soccer" ? soccerPlayers : basketballPlayers;
+  const currentPlayers =
+    activeTab === "soccer" ? soccerPlayers : basketballPlayers;
 
   return (
     <div
@@ -199,7 +206,8 @@ export default function TeamManagementPage() {
             🏆 {loggedInUser.schoolName} 대표팀 스쿼드 관리
           </h1>
           <p className="text-gray-400 text-sm">
-            종목별 팀 정보를 등록하고, 우리 학교를 빛낼 자랑스러운 라인업과 전술 포메이션을 배치하세요!
+            종목별 팀 정보를 등록하고, 우리 학교를 빛낼 자랑스러운 라인업과 전술
+            포메이션을 배치하세요!
           </p>
         </div>
 
@@ -232,7 +240,9 @@ export default function TeamManagementPage() {
           {/* [1] 선수 등록 폼 */}
           <div
             className={`p-6 rounded-xl border ${
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200 shadow"
             }`}
           >
             <h3
@@ -242,9 +252,14 @@ export default function TeamManagementPage() {
             >
               🏃‍♂️ 새 선수 등록
             </h3>
-            <form onSubmit={handleRegisterPlayer} className="flex flex-col gap-4">
+            <form
+              onSubmit={handleRegisterPlayer}
+              className="flex flex-col gap-4"
+            >
               <div>
-                <label className="block text-xs text-gray-400 mb-1">선수 이름</label>
+                <label className="block text-xs text-gray-400 mb-1">
+                  선수 이름
+                </label>
                 <input
                   type="text"
                   value={playerName}
@@ -254,7 +269,9 @@ export default function TeamManagementPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">등번호</label>
+                <label className="block text-xs text-gray-400 mb-1">
+                  등번호
+                </label>
                 <input
                   type="number"
                   value={playerNumber}
@@ -264,7 +281,9 @@ export default function TeamManagementPage() {
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">포지션</label>
+                <label className="block text-xs text-gray-400 mb-1">
+                  포지션
+                </label>
                 {activeTab === "soccer" ? (
                   <select
                     value={playerPosition}
@@ -306,11 +325,14 @@ export default function TeamManagementPage() {
           {/* [2] 공식 로스터 리스트 */}
           <div
             className={`md:col-span-2 p-6 rounded-xl border ${
-              isDarkMode ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200 shadow"
+              isDarkMode
+                ? "bg-gray-800 border-gray-700"
+                : "bg-white border-gray-200 shadow"
             }`}
           >
             <h3 className="text-lg font-bold mb-4 text-gray-200">
-              📋 {activeTab === "soccer" ? "축구팀" : "농구팀"} 공식 로스터 ({currentPlayers.length}명)
+              📋 {activeTab === "soccer" ? "축구팀" : "농구팀"} 공식 로스터 (
+              {currentPlayers.length}명)
             </h3>
 
             <div className="overflow-x-auto">
@@ -326,8 +348,12 @@ export default function TeamManagementPage() {
                 <tbody>
                   {currentPlayers.length === 0 ? (
                     <tr>
-                      <td colSpan={4} className="py-8 text-center text-xs text-gray-500">
-                        아직 등록된 대표 선수가 없습니다. 왼쪽에 선수를 추가해 주세요.
+                      <td
+                        colSpan={4}
+                        className="py-8 text-center text-xs text-gray-500"
+                      >
+                        아직 등록된 대표 선수가 없습니다. 왼쪽에 선수를 추가해
+                        주세요.
                       </td>
                     </tr>
                   ) : (
@@ -338,7 +364,9 @@ export default function TeamManagementPage() {
                       >
                         <td
                           className={`py-3 font-mono font-bold ${
-                            activeTab === "soccer" ? "text-green-400" : "text-orange-400"
+                            activeTab === "soccer"
+                              ? "text-green-400"
+                              : "text-orange-400"
                           }`}
                         >
                           No. {player.number}
@@ -351,7 +379,9 @@ export default function TeamManagementPage() {
                         </td>
                         <td className="py-3 text-center">
                           <button
-                            onClick={() => handleDeletePlayer(player.id, player.name)}
+                            onClick={() =>
+                              handleDeletePlayer(player.id, player.name)
+                            }
                             className="px-2 py-1 text-xs font-bold bg-red-500/10 hover:bg-red-500 text-red-400 hover:text-white border border-red-500/20 rounded-md transition-all cursor-pointer"
                           >
                             🗑️ 제명
